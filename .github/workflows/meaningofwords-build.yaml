@@ -2,13 +2,13 @@ name: meaningofwords-build
 on:
   push:
     tags:
-      - "[0-9].[0-9]+.[0-9]+"
+      - "[0-9]+.[0-9]+.[0-9]+"
   workflow_dispatch:
   pull_request:
     branches:
       - "main"
     paths:
-      - "meaningofwords/**"
+      - "src/*"
       - ".github/workflows/meaningofwords-build.yaml"
 jobs:
   build:
