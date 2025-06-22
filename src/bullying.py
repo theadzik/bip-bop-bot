@@ -18,7 +18,7 @@ class BullyingClient:
         self.PORT = os.environ["BULLYING_DETECTOR_PORT"]
 
     def get_bullying_prediction(self, text) -> dict:
-        url = f"http://{self.BASE_URL}:{self.PORT}/"
+        url = f"{self.BASE_URL}:{self.PORT}/"
         logger.debug(f"Got body for sentiment analysis:\n{text}")
         data = Item(text=text).model_dump()
         logger.debug(f"Data object:\n{data}")
