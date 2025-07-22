@@ -47,10 +47,6 @@ class OpenAIChecker:
             self.bad_bot_prompt = file.read().strip()
             logger.debug(f"Loaded bad bot prompt:\n{self.bad_bot_prompt}")
 
-        self.presence_penalty = float(os.getenv("OPENAI_PRESENCE_PENALTY", 0))
-        self.frequency_penalty = float(os.getenv("OPENAI_FREQUENCY_PENALTY", 0))
-        self.temperature = float(os.getenv("OPENAI_TEMPERATURE", 1))
-        self.token_limit = int(os.getenv("OPENAI_TOKEN_LIMIT", 256))
         self.reasoning_effort = self.get_reasoning_effort()
         self.model_version = self.get_model_version()
 
