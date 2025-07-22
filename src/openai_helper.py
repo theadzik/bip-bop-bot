@@ -114,3 +114,16 @@ class OpenAIChecker:
         ]
 
         return self.send_request(prompt=prompt, response_format=WordCheckerResponse)
+
+
+if __name__ == "__main__":
+    import json
+
+    with open(os.getenv("REDDIT_DICTIONARY_PATH")) as file:
+        dictionary = json.load(file)
+    checker = OpenAIChecker()
+    word = "dobrzy"
+    rules = " ".join(dictionary[word]["explanations"])
+    body = "Polscy programiści są dobzi. Lepsi nawet niż OpenAI."
+    explanation = checker.get_explanation(word=word, extra_info=rules, body=body)
+    print(explanation)
