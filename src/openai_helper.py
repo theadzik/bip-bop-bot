@@ -54,25 +54,20 @@ class OpenAIChecker:
         self.temperature = float(os.getenv("OPENAI_TEMPERATURE", 1))
         self.token_limit = int(os.getenv("OPENAI_TOKEN_LIMIT", 256))
 
-    def send_request(self, prompt: list, response_format: type[BaseModel]):
-        max_tokens = self.token_limit
-        try:
-            chat_completion = client.beta.chat.completions.parse(
-                model=self.MODEL_VERSION,
-                response_format=response_format,
-                messages=prompt,
-                presence_penalty=self.presence_penalty,
-                frequency_penalty=self.frequency_penalty,
-                temperature=self.temperature,
-            )
-            content = chat_completion.choices[0].message.parsed
-            logger.debug(content)
-
-            return content
-        except openai.LengthFinishReasonError as e:
-            logger.error(f"Generated response was longer than {max_tokens} tokens!")
-            logger.error(e)
-            raise e
+    def send_request(self, prompt: list, response_format: type[BaseModel], effort: openai.types.ReasoningEffort | None = None):
+        if effort:
+            reasoning = openai.types.Reasoning(effort=effort)
+        else:
+            reasoning = None
+        response = client.responses.parse(
+            model=self.MODEL_VERSION,
+            text_format=response_format,
+            input=prompt,
+            reasoning=reasoning,
+        )
+        content = response.output_parsed
+        logger.debug(content)
+        return content
 
     def get_bullying_response(self, body: str) -> BullyingDetectorResponse:
         logger.debug(f"I got this body:\n{body}")
