@@ -28,8 +28,6 @@ class BadBotResponse(BaseModel):
 
 
 class OpenAIChecker:
-    MODEL_VERSION = "o4-mini-2025-04-16"
-
     def __init__(self):
         with open(
             os.getenv("REDDIT_CHECKER_PROMPT_PATH"), mode="r", encoding="utf-8"
@@ -53,21 +51,34 @@ class OpenAIChecker:
         self.frequency_penalty = float(os.getenv("OPENAI_FREQUENCY_PENALTY", 0))
         self.temperature = float(os.getenv("OPENAI_TEMPERATURE", 1))
         self.token_limit = int(os.getenv("OPENAI_TOKEN_LIMIT", 256))
+        self.reasoning_effort = self.get_reasoning_effort()
+        self.model_version = self.get_model_version()
 
-    def send_request(self, prompt: list, response_format: type[BaseModel], effort: openai.types.ReasoningEffort | None = None):
-        if effort:
-            reasoning = openai.types.Reasoning(effort=effort)
-        else:
-            reasoning = None
+    def send_request(self, prompt: list, response_format: type[BaseModel]):
         response = client.responses.parse(
-            model=self.MODEL_VERSION,
+            model=self.model_version,
             text_format=response_format,
             input=prompt,
-            reasoning=reasoning,
+            reasoning=self.reasoning_effort,
         )
         content = response.output_parsed
         logger.debug(content)
         return content
+
+    @staticmethod
+    def get_reasoning_effort():
+        effort = os.getenv("OPENAI_EFFORT", None)
+        if not effort:
+            return None
+
+        if effort in ["low", "medium", "high"]:
+            return effort
+        else:
+            raise ValueError("OPENAI_EFFORT must be low, medium or high")
+
+    @staticmethod
+    def get_model_version():
+        return os.getenv("OPENAI_MODEL", "o4-mini-2025-04-16")
 
     def get_bullying_response(self, body: str) -> BullyingDetectorResponse:
         logger.debug(f"I got this body:\n{body}")
