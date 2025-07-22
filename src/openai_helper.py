@@ -68,7 +68,7 @@ class OpenAIChecker:
             return None
 
         if effort in ["low", "medium", "high"]:
-            return effort
+            return {"effort": effort}
         else:
             raise ValueError("OPENAI_EFFORT must be low, medium or high")
 
