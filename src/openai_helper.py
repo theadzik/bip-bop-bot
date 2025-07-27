@@ -1,9 +1,10 @@
 import os
 
 import openai
-from custom_logger import get_logger
 from dotenv import load_dotenv
 from pydantic import BaseModel
+
+from custom_logger import get_logger
 
 load_dotenv()
 
