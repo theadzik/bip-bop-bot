@@ -2,13 +2,15 @@ import os
 import time
 
 import praw
+from dotenv import load_dotenv
+from prawcore import RequestException
+from prawcore import ServerError
+
+import formatting
 from bullying import BullyingClient
 from custom_logger import get_logger
 from database import DatabaseClientSingleton
-from dotenv import load_dotenv
 from openai_helper import OpenAIChecker
-from prawcore import RequestException
-from prawcore import ServerError
 from reddit_bot import BotCommenter
 
 load_dotenv()
@@ -87,7 +89,8 @@ def handle_direct_reply(comment: praw.models.Comment) -> None:
             return
         logger.warning("Bad bot detected :(")
         content = openai_checker.get_bad_bot_response(comment.body)
-        _ = bot_commenter.reply_with_retry(comment=comment, reply=content.response)
+        escaped_body = formatting.escaped_markdown(content.response)
+        _ = bot_commenter.reply_with_retry(comment=comment, reply=escaped_body)
         database_client.save_ghost(comment.author, "Bad bot comment")
         return
 

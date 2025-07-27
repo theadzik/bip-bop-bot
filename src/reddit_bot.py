@@ -5,6 +5,8 @@ import re
 import time
 
 import praw
+
+import formatting
 from custom_logger import get_logger
 from database import DatabaseClientSingleton
 from openai_helper import WordCheckerResponse
@@ -68,6 +70,7 @@ class BotCommenter:
     ) -> str:
         # Add two spaces in front of the new paragraph to continue under the same bullet point.
         explanation = content.explanation.replace("\n\n", "\n\n  ")
+        explanation = formatting.escaped_markdown(explanation)
 
         message = (
             f"{self.signature}"
