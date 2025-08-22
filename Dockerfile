@@ -1,4 +1,4 @@
-FROM python:3.13.6-alpine3.22
+FROM python:3.13.7-alpine3.22
 
 RUN apk add --no-cache sqlite
 
